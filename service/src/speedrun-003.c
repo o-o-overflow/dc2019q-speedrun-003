@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0
-
 void say_hello()
 {
    printf("Think you can drift?\n");
@@ -31,12 +29,6 @@ void shellcode_it(char* buf, unsigned int size)
    void *ptr = mmap(0, size, PROT_EXEC | PROT_WRITE | PROT_READ, MAP_ANON | MAP_PRIVATE, -1, 0);
    void (*shell)();
    memcpy(ptr, buf, size);
-
-   // Set an alarm
-   if (!DEBUG)
-   {
-	  alarm(5);
-   }
 
    shell = (void (*)()) ptr;
    shell();
@@ -86,6 +78,12 @@ void get_that_shellcode()
 int main(int argc, char** argv)
 {
    setvbuf(stdout, NULL, _IONBF, 0);
+
+   if (getenv("DEBUG") == NULL)
+   {
+	  alarm(5);
+   }
+   
 
    say_hello();
    get_that_shellcode();
